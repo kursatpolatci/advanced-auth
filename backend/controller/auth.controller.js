@@ -1,8 +1,9 @@
 import bcryptjs from "bcryptjs"
+import crypto from "crypto"
 
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
     try {
@@ -125,6 +126,29 @@ export const login = async (req, res) => {
         })
     } catch (error) {
         console.log(`Error in login controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
+    }
+}
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({email});
+        if (!user) {
+            return res.status(400).json({success: false, message: "User not found"})
+        }
+
+        user.resetPasswordToken = crypto.randomBytes(20).toString("hex");
+        user.resetPasswordTokenExpiresAt = Date.now() + 15 * 60 * 1000 // 15 minutes
+
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${user.resetPasswordToken}`)
+        
+        await user.save();
+
+        res.status(200).json({success: true, message: "Password reset link sent to your email"})
+    } catch (error) {
+        console.log(`Error in forgotPassword controller: ${error.message}`)
         res.status(400).json({success: false, message: error.message})
     }
 }

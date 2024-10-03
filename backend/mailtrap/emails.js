@@ -1,4 +1,4 @@
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js"
+import { PASSWORD_RESET_REQUEST_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js"
 import { mailtrapClient, sender } from "./mailtrap.config.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
@@ -8,15 +8,15 @@ export const sendVerificationEmail = async (email, verificationToken) => {
         const response = await mailtrapClient.send({
             from: sender,
             to: recipient,
-            subject: "Verify your email",
+            subject: "Verify Your Email",
             html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationToken}", verificationToken),
             category: "Email Verification"
         })
 
         console.log("Verification Email sent successfully", response);
     } catch (error) {
-        console.error("Error sending verification", error)
-        throw new Error(`Error sending verification email: ${error}`)
+        console.error("Error sending Verification Email", error)
+        throw new Error(`Error sending Verification Email: ${error}`)
     }
 }
 
@@ -36,7 +36,26 @@ export const sendWelcomeEmail = async (email, name) => {
 
         console.log("Welcome Email sent successfully", response);
     } catch (error) {
-        console.error("Error sending verification", error)
-        throw new Error(`Error sending verification email: ${error}`)
+        console.error("Error sending Welcome Email", error)
+        throw new Error(`Error sending Welcome Email: ${error}`)
+    }
+}
+
+export const sendPasswordResetEmail = async (email, resetURL) => {
+    try {
+        const recipient = [{email}]
+
+        const response = await mailtrapClient.send({
+            from: sender,
+            to: recipient,
+            subject: "Reset Your Password",
+            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+            category: "Password Reset"
+        })
+
+        console.log("Password Reset Email sent successfully", response);
+    } catch (error) {
+        console.error(`Error sending Password Reset Email`, error)
+        throw new Error(`Error sending Password Reset Email: ${error}`)
     }
 }
