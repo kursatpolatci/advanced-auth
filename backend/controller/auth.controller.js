@@ -90,6 +90,41 @@ export const logout = async (req, res) => {
         res.clearCookie("token");
         res.status(200).json({success: true, message: "Logget out successfully"})
     } catch (error) {
-        res.status(500).json({success: false, message: error.message})
+        console.log(`Error in logout controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
+    }
+}
+
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({email});
+        if (!user) {
+            return res.status(400).json({success: false, message: "Invalid Credentials"})
+        }
+
+        const isPasswordValid = bcryptjs.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({success: false, message: "Invalid Credentials"})
+        }
+
+        generateTokenAndSetCookie(res, user._id);
+
+        user.lastLogin = new Date();
+
+        await user.save()
+
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })
+    } catch (error) {
+        console.log(`Error in login controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
     }
 }
