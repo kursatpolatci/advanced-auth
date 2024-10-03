@@ -2,7 +2,7 @@ import bcryptjs from "bcryptjs"
 
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
     try {
@@ -24,15 +24,15 @@ export const signup = async (req, res) => {
 
         const user = new User({
             email,
-            password,
+            password: hashedPassword,
             name,
             verificationToken,
-            verificationTokenTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+            verificationTokenExpiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
         })
 
         generateTokenAndSetCookie(res, user._id)
 
-        sendVerificationEmail(email, verificationToken)
+        await sendVerificationEmail(email, verificationToken)
 
         await user.save();
         
@@ -45,6 +45,42 @@ export const signup = async (req, res) => {
             }
         })
     } catch (error) {
-        res.status(400).json({success: false, message: error.message})   
+        console.log(`Error in signup controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
+    }
+}
+
+export const verifyEmail = async (req, res) => {
+    try {
+        const { code } = req.body;
+
+        const user = await User.findOne({
+            verificationToken: code,
+            verificationTokenExpiresAt: {$gt: Date.now()}
+        })
+
+        if (!user) {
+            return res.status(400).json({success: false, message: "Invalid or expired verification code"})
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpiresAt = undefined;
+
+        await sendWelcomeEmail(user.email, user.name);
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Email verified successfully",
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })
+    } catch (error) {
+        console.log(`Error in verifyEmail controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
     }
 }
