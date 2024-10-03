@@ -3,7 +3,7 @@ import crypto from "crypto"
 
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
     try {
@@ -105,7 +105,7 @@ export const login = async (req, res) => {
             return res.status(400).json({success: false, message: "Invalid Credentials"})
         }
 
-        const isPasswordValid = bcryptjs.compare(password, user.password);
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({success: false, message: "Invalid Credentials"})
         }
@@ -149,6 +149,38 @@ export const forgotPassword = async (req, res) => {
         res.status(200).json({success: true, message: "Password reset link sent to your email"})
     } catch (error) {
         console.log(`Error in forgotPassword controller: ${error.message}`)
+        res.status(400).json({success: false, message: error.message})
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordTokenExpiresAt: {$gt: Date.now()}
+        })
+
+        if (!user) {
+            return res.status(400).json({success: false, message: "Invalid or expired reset token"})
+        }
+
+        const salt = await bcryptjs.genSalt(10);
+        const hashedPassword = await bcryptjs.hash(password, salt)
+
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenExpiresAt = undefined;
+
+        await sendResetSuccessEmail(user.email);
+
+        await user.save();
+
+        res.status(200).json({success: true, message: "Password reset successfully"})
+    } catch (error) {
+        console.log(`Error in resetPassword controller: ${error.message}`)
         res.status(400).json({success: false, message: error.message})
     }
 }
