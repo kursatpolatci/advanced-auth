@@ -2,14 +2,16 @@ import { Navigate, Route, Routes } from "react-router-dom"
 import { useEffect } from "react"
 
 import FloatingShape from "./components/FloatingShape"
+import LoadingSpinner from "./components/LoadingSpinner"
 
 import SignUpPage from "./pages/SignUpPage"
 import LoginPage from "./pages/LoginPage"
 import EmailVerificationPage from "./pages/EmailVerificationPage"
 import DashboardPage from "./pages/DashboardPage"
+import ForgotPasswordPage from "./pages/ForgotPasswordPage"
+import ResetPasswordPage from "./pages/ResetPasswordPage"
 
 import { useAuthStore } from "./store/authStore"
-import LoadingSpinner from "./components/LoadingSpinner"
 
 const RedirectAuthenticatedUser = ({children}) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -37,12 +39,11 @@ const ProtectRoute = ({children}) => {
 
 function App() {
 
-  const { isCheckingAuth, checkAuth } = useAuthStore();
+  const { isCheckingAuth, checkAuth, user, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth])
-
   if(isCheckingAuth) return <LoadingSpinner />
   return (
     <div className=" min-h-screen bg-gradient-to-br from-gray-800 via-green-900 to-emerald-900 flex items-center justify-center relative overflow-hidden">
@@ -80,6 +81,28 @@ function App() {
           element={
             <EmailVerificationPage />
           }
+        />
+        <Route 
+          path="/forgot-password"
+          element={
+            <RedirectAuthenticatedUser>
+              <ForgotPasswordPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
+        <Route 
+          path="/reset-password/:token"
+          element={
+            <RedirectAuthenticatedUser>
+              <ResetPasswordPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
+        <Route
+          path='*'
+          element={
+            <Navigate to='/' replace />
+          } 
         />
       </Routes>
     </div>
