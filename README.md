@@ -17,15 +17,13 @@ About This Course:
 -   🔁 Reset Password Endpoint
 -   ✔️ Check Auth Endpoint
 -   🌐 Frontend Setup
--   📋 Signup Page UI
--   🔓 Login Page UI
--   ✅ Email Verification Page UI
 -   📤 Implementing Signup
 -   📧 Implementing Email Verification
--   🔒 Protecting Our Routes
 -   🔑 Implementing Login
 -   🏠 Dashboard Page
+-   🔒 Protecting Our Routes
 -   🔄 Implementing Forgot Password
+-   🔁 Implementing Reset Password
 -   🚀 Deployment
 
 ### Setup .env file
