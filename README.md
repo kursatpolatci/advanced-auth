@@ -3,7 +3,7 @@
 
 ![Demo App](frontend/public/project-photo.png)
 
-About This Course:
+About This Project:
 
 -   🔧 Backend Setup
 -   🗄️ Database Setup
