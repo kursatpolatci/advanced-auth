@@ -4,7 +4,7 @@
 ![Demo App](frontend/public/project-photo.png)
 
 About This Project:
-
+-   ⚛️ Tech Stack: React.js, MongoDB, Node.js, Express, Tailwind
 -   🔧 Backend Setup
 -   🗄️ Database Setup
 -   🔐 Signup Endpoint
