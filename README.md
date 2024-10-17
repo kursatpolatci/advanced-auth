@@ -1,7 +1,7 @@
 
 <h1 align="center">Advanced Auth 🔒 </h1>
 
-![Demo App](frontend/public/project-photo.png)
+![Demo App](frontend\public\photo-collage.png)
 
 About This Project:
 -   ⚛️ Tech Stack: React.js, MongoDB, Node.js, Express, Tailwind
