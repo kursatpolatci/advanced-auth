@@ -1,4 +1,4 @@
-import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js"
+import { DELETE_SUCCESS_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js"
 import { transporter } from "./email.config.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
@@ -7,7 +7,9 @@ export const sendVerificationEmail = async (email, verificationToken) => {
             from: "polatcikursat58@gmail.com",
             to: email,
             subject: "Verification Email",
-            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationToken}", verificationToken),
+            html: VERIFICATION_EMAIL_TEMPLATE
+            .replace("{verificationToken}", verificationToken)
+            .replace(/{project_name}/g, "Advanced Auth")
         }
 
         const res = await transporter.sendMail(mailOptions)
@@ -26,7 +28,8 @@ export const sendWelcomeEmail = async (email, name) => {
             subject: "Welcome Email",
             html: WELCOME_EMAIL_TEMPLATE
             .replace(/{name}/g, name)
-            .replace("{project_name}", "Advanced Auth")
+            .replace(/{project_name}/g, "Advanced Auth")
+
         }
         
         const res = await transporter.sendMail(mailOptions)
@@ -43,7 +46,9 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
             from: "polatcikursat58@gmail.com",
             to: email,
             subject: "Reset Your Password",
-            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL)
+            html: PASSWORD_RESET_REQUEST_TEMPLATE
+            .replace("{resetURL}", resetURL)
+            .replace(/{project_name}/g, "Advanced Auth")
         }
 
         const res = await transporter.sendMail(mailOptions)
@@ -60,7 +65,8 @@ export const sendResetSuccessEmail = async (email) => {
             from: "polatcikursat58@gmail.com",
             to: email,
             subject: "Password Reset Successfully",
-            html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+            html: PASSWORD_RESET_SUCCESS_TEMPLATE
+            .replace(/{project_name}/g, "Advanced Auth")
         }
 
         const res = await transporter.sendMail(mailOptions)
@@ -68,5 +74,23 @@ export const sendResetSuccessEmail = async (email) => {
     } catch (error) {
         console.error(`Error sending Password Reset Success Email`, error)
         throw new Error(`Error sending Password Reset Success Email: ${error}`)
+    }
+}
+
+export const sendDeleteSuccessEmail = async (email) => {
+    try {
+        const mailOptions = {
+            from: "polatcikursat58@gmail.com",
+            to: email,
+            subject: "Deleted Account Successfully",
+            html: DELETE_SUCCESS_EMAIL_TEMPLATE
+            .replace(/{project_name}/g, "Advanced Auth")
+        }
+
+        const res = await transporter.sendMail(mailOptions)
+        console.log("Delete Success Email sent successfully: ", res)
+    } catch (error) {
+        console.error(`Error sending Delete Success Email`, error)
+        throw new Error(`Error sending Delete Success Email: ${error}`)
     }
 }

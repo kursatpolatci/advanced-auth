@@ -7,6 +7,7 @@ import path from "path";
 import { connectDB } from "./db/connectMongoDB.js";
 
 import authRoutes from "./routes/auth.route.js"
+import userRoutes from "./routes/user.route.js"
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use(cors({origin: "http://localhost:3000", credentials: true}))
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes)
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "/frontend/dist")))

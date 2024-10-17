@@ -10,20 +10,23 @@ About This Project:
 -   🔐 Signup Endpoint
 -   📧 Sending Verify Account Email
 -   🔍 Verify Email Endpoint
--   📄 Building a Welcome Email Template
+-   📧 Sending Welcome Email
 -   🚪 Logout Endpoint
 -   🔑 Login Endpoint
 -   🔄 Forgot Password Endpoint
+-   📧 Sending Forgot Password Email
 -   🔁 Reset Password Endpoint
+-   📧 Sending Reset Password Email
 -   ✔️ Check Auth Endpoint
 -   🌐 Frontend Setup
 -   📤 Implementing Signup
 -   📧 Implementing Email Verification
--   🔑 Implementing Login
+-   🔑 Implementing Login and Logout
 -   🏠 Dashboard Page
 -   🔒 Protecting Our Routes
 -   🔄 Implementing Forgot Password
 -   🔁 Implementing Reset Password
+-   🗑️ Delete Account
 -   🚀 Deployment
 
 ### Setup .env file
